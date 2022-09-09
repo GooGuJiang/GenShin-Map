@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/L.Control.Zoomslider.css') }}">
+
+	<title>原神地图</title>
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		.leaflet-container {
+			height: 400px;
+			width: 600px;
+			max-width: 100%;
+			max-height: 100%;
+		}
+		.text-css{
+			color: aliceblue;
+			text-align: center;
+		}
+		.text-bg-css{
+			background-color: rgb(116, 113, 113);
+			border-radius: 10px;
+		}
+	</style>
+
+	
+</head>
+<body>
+
+<div id='map' style="height: 100%; width: 100%;"></div>
+<script type="text/javascript" src="{{ url_for('static', filename='js/L.Control.Zoomslider.js') }}"></script>
+<script type="text/javascript">
+
+	var corner1 = L.latLng(-8.0625, 24.125),
+	corner2 = L.latLng(-183.9375, 231.875),
+	bounds = L.latLngBounds(corner1, corner2);
+
+
+	var map = L.map('map', {
+		crs: L.CRS.Simple,
+		center: [-81.71875, 113.8125],
+		zoom: 4,
+		minZoom:4,
+		maxZoom:15,
+		maxBounds: bounds,
+		attributionControl: false,
+		zoomsliderControl: true,
+        zoomControl: false
+	});
+
+	L.TileLayer.Kitten = L.TileLayer.extend({
+		getTileUrl: function (coords) {
+
+			console.log(coords)
+			return '/map/'+ coords.x +'/'+coords.y+"/"+coords.z;
+			//return "https://wiki-dev-patch-oss.oss-cn-hangzhou.aliyuncs.com/res/ys/map-3.0-1/tiles/6/tile-"+coords.x+"_"+coords.y+".png"
+		},
+		getAttribution: function () {
+			return '<a href="https://gmoe.cc">GooGuJiang</a>';
+		}
+	});
+
+	L.tileLayer.kitten = function () {
+		return new L.TileLayer.Kitten();
+	};
+
+	var polygon = L.polygon([
+    [0, 0],
+    [0, 01]
+	]).addTo(map);
+
+	var popup = L.popup();
+
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent("这个点坐标是: " + e.latlng.toString())
+			.openOn(map);
+	}
+
+	map.on('click', onMapClick);
+
+	var myIcon = L.divIcon({
+            html: "<div class='text-bg-css'><h2 class='text-css' >蒙德城</h2></div>",
+            className: 'mdc-text',
+            iconSize:70
+        });
+	L.marker([-35.71875, 131.734375], { icon: myIcon }).addTo(map);
+
+	var myIcon = L.divIcon({
+            html: "<div class='text-bg-css'><h2 class='text-css' >风龙废墟</h2></div>",
+            className: 'flfx-text',
+            iconSize:80
+        });
+	L.marker([-30.62705, 117.934618], { icon: myIcon }).addTo(map);
+
+	var myIcon = L.divIcon({
+            html: "<div class='text-bg-css'><h2 class='text-css' >璃月城</h2></div>",
+            className: 'flfx-text',
+            iconSize:80
+        });
+	L.marker([-81.6875, 113.8125], { icon: myIcon }).addTo(map);
+
+
+	var kittenTiles = L.tileLayer.kitten();
+	map.addLayer(kittenTiles);
+	
+</script>
+
+
+
+</body>
+</html>
